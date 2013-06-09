@@ -156,6 +156,12 @@ void loop()
         break;
       case MODE_STATIC_PREVIEW:
         Serial.println("Mode = static_preview");
+        /***
+         *
+         * Comment the following line out if you don't want static mode
+         * when switching off from non-static mode
+         *
+         ***/
         hb.set_light(CURRENT_LEVEL, brightness[current_brightness], NOW);
         break;
       case MODE_STATIC:
@@ -244,4 +250,3 @@ void cycleBrightness() {
   }
   hb.set_light(CURRENT_LEVEL, brightness[current_brightness], NOW);
 }
-
