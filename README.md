@@ -7,7 +7,7 @@ This was very easy because of the awesome [library](https://github.com/dhiltonp/
 
 Jackalope
 -------------
-The current version, codename "Jackalope" (see a pattern there?), contains the same feature as Platypus and adds quick access to the highest brightness level and Taps recording/playback (not functional yet).
+The current version, codename "Jackalope", contains the same feature as "Platypus" (see a pattern there?) and adds quick access to the highest brightness level and Taps recording/playback (not functional yet).
 
 **So in addition to all Platypus features (below), you can now also:**
 
