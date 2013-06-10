@@ -12,6 +12,9 @@
 #define MODE_BLINKING           6
 #define MODE_STROBE             7
 #define MODE_DAZZLE             8
+#define MODE_TAPS_PREVIEW       9
+#define MODE_TAPS_RECORD        10
+#define MODE_TAPS_PLAYBACK      11
 
 // State
 byte mode;
@@ -69,10 +72,12 @@ void loop()
       }
       break;
     case MODE_OFF:
-      if (button_pressed && button_pressed_time > HOLD_SHORT) {
+      if (button_pressed && button_pressed_time > HOLD_LONG) {
+        newMode = MODE_TAPS_PREVIEW;
+      } else if (button_just_released && button_pressed_time > HOLD_SHORT) {
         newMode = MODE_DYNAMIC_PREVIEW;        
-      } else if (button_pressed) {
-        newMode = MODE_STATIC_PREVIEW;
+      } else if (button_just_released) {
+        newMode = MODE_STATIC;
       }
       break;
     case MODE_STATIC_PREVIEW:
@@ -146,6 +151,25 @@ void loop()
         newMode = MODE_FADE;
       }
       break;
+    case MODE_TAPS_PREVIEW:
+      if (button_just_released) {
+        newMode = MODE_TAPS_RECORD;
+      }
+      break;
+    case MODE_TAPS_RECORD:
+      if (button_pressed && button_pressed_time > HOLD_LONG) {
+        newMode = MODE_OFF_PREVIEW;
+      } else if (button_just_released) {
+        newMode = MODE_TAPS_PLAYBACK;
+      }
+      break;
+    case MODE_TAPS_PLAYBACK:
+      if (button_pressed && button_pressed_time > HOLD_LONG) {
+        newMode = MODE_OFF_PREVIEW;
+      } else if (button_just_released) {
+        newMode = MODE_TAPS_RECORD;
+      }
+      break;
   }
 
   // Do the mode transitions
@@ -189,6 +213,15 @@ void loop()
         break;
       case MODE_DAZZLE:
         Serial.println("Mode = dazzle");
+        break;
+      case MODE_TAPS_PREVIEW:
+        Serial.println("Mode = taps_preview");
+        break;
+      case MODE_TAPS_RECORD:
+        Serial.println("Mode = taps_record");
+        break;
+      case MODE_TAPS_PLAYBACK:
+        Serial.println("Mode = taps_playback");
         break;
     }
     mode = newMode;
@@ -235,6 +268,24 @@ void loop()
         hb.set_light(CURRENT_LEVEL, 1, hb.get_light_level());
         fade_direction = -1;
       }
+    }
+  }
+  
+  if (mode == MODE_TAPS_PREVIEW) {
+    if (hb.get_led_state(GLED) == LED_OFF) {
+      hb.set_led(GLED, 50, 100, 255);
+    }
+  }
+  
+  if (mode == MODE_TAPS_RECORD) {
+    if (hb.get_led_state(RLED) == LED_OFF) {
+      hb.set_led(RLED, 50, 250, 255);
+    }
+  }
+  
+  if (mode == MODE_TAPS_PLAYBACK) {
+    if (hb.get_led_state(GLED) == LED_OFF) {
+      hb.set_led(GLED, 50, 250, 255);
     }
   }
   
