@@ -28,9 +28,9 @@ When switching from Static to Non-Static mode, you don't get the Blinking if you
 When switching from Non-Static mode to Off, the light will go into Static mode for 1500 ms (from 500 ms to 2000 ms) on the last brightness level used in Static mode. This can be disabled by reading the comments in the code and changing the appropriate lines.
 
 
-Wolpertinger
+Jackalope
 -------------
-The current version, codename "Wolpertinger" (see a pattern there?), contains the same feature as Platypus and adds quick access to the highest brightness level and Taps recording/playback (not implemented yet).
+The current version, codename "Jackalope" (see a pattern there?), contains the same feature as Platypus and adds quick access to the highest brightness level and Taps recording/playback (not implemented yet).
 
 **So in addition to all Platypus features (above), you can:**
 
