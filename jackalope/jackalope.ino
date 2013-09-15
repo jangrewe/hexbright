@@ -1,5 +1,5 @@
 #include <math.h>
-#include <Wire.h>
+#include <twi.h>
 #include <hexbright.h>
 
 // Modes
@@ -16,10 +16,15 @@
 #define MODE_TAPS_RECORD        10
 #define MODE_TAPS_PLAYBACK      11
 
+#define BUFSIZE 128
+
 // State
 byte mode;
 hexbright hb;
 char fade_direction = -1;
+unsigned int loops;
+unsigned int recording[BUFSIZE];
+int nTaps, curTap;
 
 /***
  *
@@ -219,9 +224,14 @@ void loop()
         break;
       case MODE_TAPS_RECORD:
         Serial.println("Mode = taps_record");
+        recording[BUFSIZE] = 0;
         break;
       case MODE_TAPS_PLAYBACK:
         Serial.println("Mode = taps_playback");
+        recording[0] = 0;
+        recording[nTaps] = loops;
+        loops = 0;
+        curTap = 0;
         break;
     }
     mode = newMode;
@@ -275,11 +285,20 @@ void loop()
     if (hb.get_led_state(GLED) == LED_OFF) {
       hb.set_led(GLED, 50, 100, 255);
     }
+    hb.set_light(CURRENT_LEVEL, brightness[0], NOW);
   }
   
   if (mode == MODE_TAPS_RECORD) {
     if (hb.get_led_state(RLED) == LED_OFF) {
       hb.set_led(RLED, 50, 250, 255);
+    }
+    if (nTaps<BUFSIZE-1) {
+      if(hb.tapped() && loops>5 && !button_pressed && !button_just_pressed && !button_just_released) {
+        Serial.println("Tap!");
+        recording[nTaps++] = loops; // how many loops passed before a tap?
+        loops = 0; // reset our counter
+        hb.set_light(MAX_LEVEL, 200, 150);
+      }
     }
   }
   
@@ -287,7 +306,18 @@ void loop()
     if (hb.get_led_state(GLED) == LED_OFF) {
       hb.set_led(GLED, 50, 250, 255);
     }
+    if (loops > recording[curTap]) {
+      if (curTap < nTaps) {
+        hb.set_light(MAX_LEVEL, 200, 150);
+        curTap++;
+      } else {
+        curTap = 0;
+      }
+      loops = 0;
+    }
   }
+  
+  loops++;
   
 }
 
